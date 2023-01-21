@@ -31,7 +31,9 @@ router.get('/tree', function (req, res) {
 
 
   res.send(l);
-});
+})
+.queryParam('db')
+.queryParam('app')
 
 // continued
 router.get('/apps', function (req, res) {
@@ -41,7 +43,8 @@ router.get('/apps', function (req, res) {
   let db = req.queryParams.db || "_system";
   let list = fs.list(`${base}/${db}`).filter(f=>f!="_appbundles");
   res.send({ base: base, apps: list });
-});
+})
+.queryParam('db')
 
 // continued
 router.get('/file', function (req, res) {
@@ -58,7 +61,10 @@ router.get('/file', function (req, res) {
   //res.send(`{file:"${path}", content:"${l}"}`);
   res.send({ path: file, fullPath: fullPath, content: l });
 
-});
+})
+.queryParam('db')
+.queryParam('app')
+.queryParam('file')
 
 // continued
 router.put('/file', function (req, res) {
@@ -76,5 +82,8 @@ router.put('/file', function (req, res) {
 
   res.send(req);
 
-});
+})
+.queryParam('db')
+.queryParam('app')
+.queryParam('file')
 
