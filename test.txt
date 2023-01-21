@@ -1,0 +1,6 @@
+const data={
+	filename:'test.txt',
+	content:`
+	<html></html>
+	`
+}

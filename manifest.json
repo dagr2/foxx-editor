@@ -1,0 +1,16 @@
+{
+    "name": "foxx-editor",
+    "version": "0.0.1",
+    "description": "A foxx app to edit installed foxx apps",
+    "engines": {
+        "arangodb": "^3.0.0"
+    },
+    "author": "Daniel Groeben",
+    "license": "GPL-3.0",
+    "main": "main.js",
+    "scripts": {
+        "setup": "scripts/setup.js",
+        "teardown": "scripts/teardown.js"
+    },
+    "tests": "test/**/*.js"
+}

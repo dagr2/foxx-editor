@@ -1,0 +1,1 @@
+A foxx app to edit installed foxx apps

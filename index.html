@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #container {
+            width: 100%;
+            height: 600px;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+		#apps{margin:5px;}
+		#tree{margin:5px;}
+		
+    </style>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.js" integrity="sha512-BtSZPhzoyN8kq1axY6cgOFPSgLJgFwvAZ3WxeDGxEFXeFcFuK2s7Hr+zF75npVHASUY1dxudAfIVzwmgdR89Bw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+        integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/devextreme/22.2.3/js/dx.all.js"
+        integrity="sha512-+apQ+oBhAztDHEDDBjPyn+qPezae/03N6PsucxU/eo8cW4gYjEIWimS8pOp4NA9ArQX3y5eDIxyaN/ecZDzy0Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/monaco-editor@0.8.3/min/vs/loader.js"></script>
+    <script>
+        require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.8.3/min/vs' } });
+        window.MonacoEnvironment = { getWorkerUrl: () => proxy };
+
+        let proxy = URL.createObjectURL(new Blob([`
+	self.MonacoEnvironment = {
+		baseUrl: 'https://unpkg.com/monaco-editor@0.8.3/min/'
+	};
+	importScripts('https://unpkg.com/monaco-editor@0.8.3/min/vs/base/worker/workerMain.js');
+`], { type: 'text/javascript' }));
+
+        require(["vs/editor/editor.main"], function () {
+            let editor = window.editor = monaco.editor.create(document.getElementById('container'), {
+                value: [
+                    'function x() {',
+                    '\tconsole.log("Hello world!");',
+                    '}'
+                ].join('\n'),
+                language: 'javascript',
+                theme: 'vs-dark'
+            });
+
+            // editor.addListener('didType', () => {
+            // 	console.log(editor.getValue());
+            // });
+            // editor.onVisible=()=>reload("main.js")
+        });
+
+        $(() => {
+
+
+            /*
+            $.get(`file/${encodeURI('routes\\\\test.js')}`)
+            .then(r=>{
+                $('#code').html(r.content)
+            })
+        */
+            //reload("main.js");
+            reloadApps();
+        })
+
+        const reloadApps=()=>{
+            $.get("apps").then(r => {
+                let apps=r.apps.filter(f=>f!="").map(f=>`<option value='${f}'>${f}</option>`);
+
+                $('#apps').html(`
+                <b>apps:</b><select id='select_a' onChange='reloadFiles()'>
+                ${apps}
+                </select>
+                `);
+                reloadFiles();
+            })
+        }
+
+        const reloadFiles=()=>{
+            let app=$('#select_a').val();
+
+            $.get("tree?app="+app).then(r => {
+                let options=r.tree.filter(f=>f!="").map(f=>`<option value='${f}'>${f}</option>`);
+
+                $('#tree').html(`
+                <b>Files:</b><select id='select_f' onChange='reloadFile()'>
+                ${options}
+                </select>
+                `);
+                reloadFile();
+            })
+        }
+
+        const reloadFile=()=>{
+            let app=$('#select_a').val();
+            let file=$('#select_f').val();
+            reload(file)
+        }
+
+        const save = () => {
+            let fn = editor.fn;
+            let content = editor.getValue();
+
+            $.ajax({
+                method: 'PUT',
+                url: `file?file=${fn}`,
+                data: content
+            })
+        }
+
+        const reload = (fn) => {
+            editor.fn = fn;
+
+            $.get(`file?file=${encodeURI(fn)}`)
+                .then(r => {
+                    let d = r.content;
+                    editor.setValue(d)
+                    //$('#raw').text(r)
+                })
+        }
+    </script>
+</head>
+
+<body>
+    <h2>Foxx-Editor</h2>
+	
+
+    <div id="toolbar">
+    	<span id="apps"></span>
+    	<span id="tree"></span>
+	    <button onClick="save()">Save</button>
+    </div>
+    <div id="container"></div>
+
+</body>
+
+</html>
