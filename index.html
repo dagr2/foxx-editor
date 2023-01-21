@@ -63,6 +63,8 @@
             reloadApps();
         })
 
+		const changeLang = lang => monaco.editor.setModelLanguage(editor.getModel(), lang);
+
         const reloadApps=()=>{
             $.get("apps").then(r => {
                 let apps=r.apps.filter(f=>f!="").map(f=>`<option value='${f}'>${f}</option>`);
@@ -94,7 +96,18 @@
         const reloadFile=()=>{
             let app=$('#select_a').val();
             let file=$('#select_f').val();
-            reload(file)
+			let ext=file.split('.').slice(-1)[0];
+            reload(file);
+
+			switch (ext.toLowerCase()){
+				case 'js': changeLang('javascript');break;
+				case 'html': changeLang('html');break;
+				case 'htm': changeLang('html');break;
+				case 'ts': changeLang('typescript');break;
+				case 'css': changeLang('css');break;
+				case 'json': changeLang('json');break;
+				default: changeLang('text');break;
+			}
         }
 
         const save = () => {
