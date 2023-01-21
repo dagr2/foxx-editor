@@ -100,18 +100,18 @@
         const save = () => {
             let fn = editor.fn;
             let content = editor.getValue();
-
+            let app=$('#select_a').val();
             $.ajax({
                 method: 'PUT',
-                url: `file?file=${fn}`,
+                url: `file?app=${app}&file=${fn}`,
                 data: content
             })
         }
 
         const reload = (fn) => {
             editor.fn = fn;
-
-            $.get(`file?file=${encodeURI(fn)}`)
+            let app=$('#select_a').val();
+            $.get(`file?app=${app}&file=${encodeURI(fn)}`)
                 .then(r => {
                     let d = r.content;
                     editor.setValue(d)
@@ -130,6 +130,7 @@
     	<span id="tree"></span>
 	    <button onClick="save()">Save</button>
     </div>
+	<hr>
     <div id="container"></div>
 
 </body>
