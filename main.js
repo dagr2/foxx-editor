@@ -39,7 +39,7 @@ router.get('/apps', function (req, res) {
   let base = module.context.basePath.split(sep).slice(0, -3).join(sep);
 
   let db = req.queryParams.db || "_system";
-  let list = fs.list(`${base}/${db}`);
+  let list = fs.list(`${base}/${db}`).filter(f=>f!="_appbundles");
   res.send({ base: base, apps: list });
 });
 
